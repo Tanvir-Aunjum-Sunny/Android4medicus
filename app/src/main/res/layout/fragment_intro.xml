@@ -1,16 +1,12 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout"
+    android:id="@+id/RelativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.medicus.medicus.IntroActivity$PlaceholderFragment">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="31dp">
+
 
         <TextView
             android:id="@+id/textView"
@@ -22,7 +18,6 @@
             android:textColor="@color/colorPrimary"
             android:textSize="25sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/imageView"
             tools:layout_editor_absoluteX="119dp" />
 
         <TextView
@@ -46,6 +41,5 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="105dp"
             android:src="@mipmap/ic_launcher_round" />
-    </RelativeLayout>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>
