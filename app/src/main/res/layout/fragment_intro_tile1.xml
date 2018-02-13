@@ -7,14 +7,14 @@
     tools:context="com.medicus.medicus.IntroActivity$PlaceholderFragment">
 
 
-
     <TextView
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="Need a Doctor?"
+        android:text="@string/manageAppointment"
+        android:textAlignment="center"
         android:textColor="@color/colorPrimary"
         android:textSize="25sp"
         android:textStyle="bold"
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
-        android:text="Search doctor using the app and find the best doctor near you."
+        android:text="Make and Manage appointments in a single app."
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="20sp"

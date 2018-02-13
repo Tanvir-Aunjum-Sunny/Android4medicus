@@ -1,6 +1,7 @@
 package com.medicus.medicus;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -58,9 +59,26 @@ public class IntroActivity1 extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
+        Button button = (Button) findViewById(R.id.button5);
+        button.setOnClickListener(new View.OnClickListener()   {
+            public void onClick(View v)  {
+                try {
+                    changeInstance();
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 
+    public void changeInstance(){
+        Intent main = new Intent(IntroActivity1.this,
+                MainActivity.class);
+        IntroActivity1.this.startActivity(main);
+        IntroActivity1.this.finish();
+    }
 
 
     @Override

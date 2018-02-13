@@ -12,4 +12,5 @@
     <string name="skip_text"> <u>Skip</u> </string>
 
     <string name="title_activity_intro3">ActivityIntro3</string>
+    <string name="manageAppointment">Make &amp; Manage Appointment</string>
 </resources>
