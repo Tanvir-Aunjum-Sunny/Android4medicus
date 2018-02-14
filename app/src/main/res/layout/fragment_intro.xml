@@ -4,8 +4,7 @@
     android:id="@+id/RelativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.medicus.medicus.IntroActivity$PlaceholderFragment">
-
+    android:elevation="2dp">
 
 
         <TextView
@@ -15,6 +14,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:text="Need a Doctor?"
+            android:textAlignment="center"
             android:textColor="@color/colorPrimary"
             android:textSize="25sp"
             android:textStyle="bold"
