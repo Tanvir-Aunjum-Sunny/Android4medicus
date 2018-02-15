@@ -3,6 +3,7 @@ package com.medicus.medicus;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Paint;
 import android.os.Handler;
@@ -29,7 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,7 @@ public class IntroActivity1 extends AppCompatActivity {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-//    private IntroActivity1.SectionsPagerAdapter mSectionsPagerAdapter;
+
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -58,7 +58,7 @@ public class IntroActivity1 extends AppCompatActivity {
     private int dotscount;
     private ImageView[] dots;
 
-
+    Button skip,register;
 
 
     @Override
@@ -66,17 +66,38 @@ public class IntroActivity1 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro1);
 
+        SharedPreferences share = getSharedPreferences("PREFS", MODE_PRIVATE);
+
+        if(share.getInt("isIntroDone",0) ==1){
+            Intent main = new Intent(IntroActivity1.this,
+                    LoginActivity.class);
+            IntroActivity1.this.startActivity(main);
+            IntroActivity1.this.finish();
+        }
+
         init();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
-        Button button = (Button) findViewById(R.id.button5);
-        button.setOnClickListener(new View.OnClickListener()   {
+        skip = (Button) findViewById(R.id.button5);
+        skip.setOnClickListener(new View.OnClickListener()   {
             public void onClick(View v)  {
                 try {
-                    changeInstance();
+                    changeInstance(1);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        register = (Button) findViewById(R.id.button2);
+        register.setOnClickListener(new View.OnClickListener()   {
+            public void onClick(View v)  {
+                try {
+                    changeInstance(0);
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -86,16 +107,26 @@ public class IntroActivity1 extends AppCompatActivity {
 
 
 
-
-
-
     }
 
-    public void changeInstance(){
-//        Intent main = new Intent(IntroActivity1.this,
-//                ScreenSlidePagerActivity.class);
-//        IntroActivity1.this.startActivity(main);
-//        IntroActivity1.this.finish();
+    public void changeInstance(int chk){
+        Intent main;
+        if(chk == 0) {
+            main = new Intent(IntroActivity1.this,
+                    LoginActivity.class);
+        } else{
+            main = new Intent(IntroActivity1.this,
+                    LoginActivity.class);
+
+            SharedPreferences share = getSharedPreferences("PREFS", MODE_PRIVATE);
+            SharedPreferences.Editor editor;
+            editor = share.edit();
+            editor.putInt("isIntroDone",1);
+            editor.apply();
+        }
+            IntroActivity1.this.startActivity(main);
+            IntroActivity1.this.finish();
+
     }
 
 
