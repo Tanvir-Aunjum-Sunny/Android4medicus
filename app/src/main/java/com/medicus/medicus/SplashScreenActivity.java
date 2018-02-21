@@ -3,12 +3,25 @@ package com.medicus.medicus;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -115,10 +128,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private final Runnable changeInstance = new Runnable(){
         public void run() {
-            Intent main = new Intent(SplashScreenActivity.this,
-                    IntroActivity1.class);
-            SplashScreenActivity.this.startActivity(main);
-            SplashScreenActivity.this.finish();
+            postRequest();
+
         }
     };
 
@@ -143,6 +154,108 @@ public class SplashScreenActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+
+
+
+    private void postRequest() {
+//        contact_no = mEmailView.getText().toString();
+
+        SharedPreferences share = getSharedPreferences("PREFS", MODE_PRIVATE);
+        final String verify_token = share.getString("token","");
+
+
+        @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, String> async = new  AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+
+                // CASE 2: For JSONObject parameter
+                String url = "http://192.168.0.102:3000/api/v1/login/verify";
+                JSONObject jsonBody;
+                String requestBody;
+                HttpURLConnection urlConnection = null;
+                try {
+                    jsonBody = new JSONObject();
+                    jsonBody.put("JWT", verify_token);
+                    requestBody = Utils.buildPostParameters(jsonBody);
+                    urlConnection = (HttpURLConnection) Utils.makeRequest("POST", url, null, "application/json", requestBody);
+
+                    // the same logic to case #1
+                    InputStream inputStream;
+                    // get stream
+                    if (urlConnection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+                        inputStream = urlConnection.getInputStream();
+                    } else {
+                        inputStream = urlConnection.getErrorStream();
+                    }
+                    // parse stream
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    String temp, response = "";
+                    while ((temp = bufferedReader.readLine()) != null) {
+                        response += temp;
+                    }
+                    //get Value of otp
+                    if (response != null) {
+                        try {
+                            JSONObject jsonObj = new JSONObject(response);
+                            String verification = jsonObj.get("status").toString();
+                            Log.d("__TOKEN__",verify_token);
+                            checkLogin(verification);
+
+                        } catch (final JSONException e) {
+                            Log.e("JSON", "Json parsing error: " + e.getMessage());
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Json parsing error: " + e.getMessage(),
+                                            Toast.LENGTH_LONG)
+                                            .show();
+                                }
+                            });
+                        }
+                    }                    return response;
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                    return e.toString();
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String response) {
+                super.onPostExecute(response);
+                // do something...
+            }
+        };
+        async.execute();
+    }
+
+
+    private void checkLogin(String status){
+        if(status.equals("true")){
+
+            Log.d("TO Illnesss screen","Verified");
+            Intent main = new Intent(SplashScreenActivity.this,
+                    Selectillness.class);
+            SplashScreenActivity.this.startActivity(main);
+            SplashScreenActivity.this.finish();
+        } else{
+            Log.d("TO Login screen","Not Verified");
+
+            Intent main = new Intent(SplashScreenActivity.this,
+                    IntroActivity1.class);
+            SplashScreenActivity.this.startActivity(main);
+            SplashScreenActivity.this.finish();
+//            Intent main = new Intent(SplashScreenActivity.this,
+//                    LoginActivity.class);
+//            SplashScreenActivity.this.startActivity(main);
+//            SplashScreenActivity.this.finish();
+        }
     }
 
 

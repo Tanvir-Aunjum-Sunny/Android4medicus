@@ -1,6 +1,8 @@
 package com.medicus.medicus;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
@@ -37,6 +39,7 @@ public class LoginActivity extends AppCompatActivity  {
      */
 
     private String otp;
+    private String token;
 
     private String contact_no;
     private static final int REQUEST_READ_CONTACTS = 0;
@@ -76,7 +79,6 @@ public class LoginActivity extends AppCompatActivity  {
             public void onClick(View view) {
                 try {
                     postRequest();
-//                    new APIRequest().execute();
                 } catch (Exception e) {
                     Log.e("Url","URL Exception");
                     e.printStackTrace();
@@ -93,7 +95,7 @@ public class LoginActivity extends AppCompatActivity  {
                 public void afterTextChanged(Editable s) {   //Convert the Text to String
                     String inputText = OTPView.getText().toString();
                     if (inputText.length() == 4) {
-                        if (inputText.equals("1234")) {
+                        if (inputText.equals(otp)) {
                             Log.d("correct Pin", "Verfied");
                             Toast.makeText(getApplicationContext(),
                                     "Validated: Fuck You",
@@ -119,13 +121,96 @@ public class LoginActivity extends AppCompatActivity  {
     }
 
     private void changeInstance(){
+
+        //Save the __TOKEN__ first and change the instance
+        SharedPreferences share = getSharedPreferences("PREFS", MODE_PRIVATE);
+        SharedPreferences.Editor editor;
+        editor = share.edit();
+        editor.putString("token",token);
+        editor.apply();
+
         Intent main = new Intent(LoginActivity.this,
                 Selectillness.class);
         LoginActivity.this.startActivity(main);
         LoginActivity.this.finish();
     }
 
-//    private void populateAutoComplete() {
+
+
+    private void postRequest() {
+        contact_no = mEmailView.getText().toString();
+
+        @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, String> async = new  AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+
+                // CASE 2: For JSONObject parameter
+                String url = "http://192.168.0.102:3000/api/v1/login/create";
+                JSONObject jsonBody;
+                String requestBody;
+                HttpURLConnection urlConnection = null;
+                try {
+                    jsonBody = new JSONObject();
+                    jsonBody.put("mobile", contact_no);
+                    requestBody = Utils.buildPostParameters(jsonBody);
+                    urlConnection = (HttpURLConnection) Utils.makeRequest("POST", url, null, "application/json", requestBody);
+
+                    // the same logic to case #1
+                    InputStream inputStream;
+                    // get stream
+                    if (urlConnection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+                        inputStream = urlConnection.getInputStream();
+                    } else {
+                        inputStream = urlConnection.getErrorStream();
+                    }
+                    // parse stream
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    String temp, response = "";
+                    while ((temp = bufferedReader.readLine()) != null) {
+                        response += temp;
+                    }
+                    //get Value of otp
+                    if (response != null) {
+                        try {
+                            JSONObject jsonObj = new JSONObject(response);
+
+                            // Getting JSON Array node
+                            otp = jsonObj.get("pin").toString();
+                            token = jsonObj.get("JWT").toString();
+                        Log.d("Response", token);
+                        } catch (final JSONException e) {
+                            Log.e("JSON", "Json parsing error: " + e.getMessage());
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Json parsing error: " + e.getMessage(),
+                                            Toast.LENGTH_LONG)
+                                            .show();
+                                }
+                            });
+                        }
+                    }                    return response;
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                    return e.toString();
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String response) {
+                super.onPostExecute(response);
+                // do something...
+            }
+        };
+        async.execute();
+    }
+
+    //    private void populateAutoComplete() {
 //        if (!mayRequestContacts()) {
 //            return;
 //        }
@@ -369,182 +454,5 @@ public class LoginActivity extends AppCompatActivity  {
 //            showProgress(false);
 //        }
 //    }
-
-    private void postRequest() {
-        contact_no = mEmailView.getText().toString();
-
-        AsyncTask<Void, Void, String> async = new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-
-                // CASE 2: For JSONObject parameter
-                String url = "http://192.168.0.102:3000/api/v1/login/create";
-                JSONObject jsonBody;
-                String requestBody;
-                HttpURLConnection urlConnection = null;
-                try {
-                    jsonBody = new JSONObject();
-                    jsonBody.put("mobile", contact_no);
-                    requestBody = Utils.buildPostParameters(jsonBody);
-                    urlConnection = (HttpURLConnection) Utils.makeRequest("POST", url, null, "application/json", requestBody);
-
-                    // the same logic to case #1
-                    InputStream inputStream;
-                    // get stream
-                    if (urlConnection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
-                        inputStream = urlConnection.getInputStream();
-                    } else {
-                        inputStream = urlConnection.getErrorStream();
-                    }
-                    // parse stream
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    String temp, response = "";
-                    while ((temp = bufferedReader.readLine()) != null) {
-                        response += temp;
-                    }
-                    //get Value of otp
-                    if (response != null) {
-                        try {
-                            JSONObject jsonObj = new JSONObject(response);
-
-                            // Getting JSON Array node
-                            otp = jsonObj.get("pin").toString();
-                        Log.d("Response", otp);
-                        } catch (final JSONException e) {
-                            Log.e("JSON", "Json parsing error: " + e.getMessage());
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Json parsing error: " + e.getMessage(),
-                                            Toast.LENGTH_LONG)
-                                            .show();
-                                }
-                            });
-                        }
-                    }                    return response;
-                } catch (JSONException | IOException e) {
-                    e.printStackTrace();
-                    return e.toString();
-                } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
-                }
-            }
-
-            @Override
-            protected void onPostExecute(String response) {
-                super.onPostExecute(response);
-                // do something...
-            }
-        };
-        async.execute();
-    }
-
-    private class APIRequest extends AsyncTask<Void, Void, String> {
-
-        @Override
-        protected String doInBackground(Void... params) {
-
-            // CASE 2: For JSONObject parameter
-            String url = "http://192.168.0.102:3000/api/v1/login/create";
-            JSONObject jsonBody;
-            String requestBody;
-            String temp, response = "";
-            HttpURLConnection urlConnection = null;
-            try {
-                jsonBody = new JSONObject();
-                jsonBody.put("mobile", "");
-                requestBody = Utils.buildPostParameters(jsonBody);
-                urlConnection = (HttpURLConnection) Utils.makeRequest("POST", url, null, "application/json", requestBody);
-
-                // the same logic to case #1
-                InputStream inputStream;
-                // get stream
-                if (urlConnection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
-                    inputStream = urlConnection.getInputStream();
-                } else {
-                    inputStream = urlConnection.getErrorStream();
-                }
-                // parse stream
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-                while ((temp = bufferedReader.readLine()) != null) {
-                    response += temp;
-                }
-
-
-
-                return response;
-            } catch (JSONException | IOException e) {
-                e.printStackTrace();
-                return e.toString();
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-            }
-
-                // CASE 1: For FromBody parameter
-//            String url = "http://10.0.2.2/api/frombody";
-//            String requestBody = Utils.buildPostParameters("'FromBody Value'"); // must have '' for FromBody parameter
-//            HttpURLConnection urlConnection = null;
-//            try {
-//                urlConnection = (HttpURLConnection) Utils.makeRequest("POST", url, null, "application/json", requestBody);
-//                InputStream inputStream;
-//                // get stream
-//                if (urlConnection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
-//                    inputStream = urlConnection.getInputStream();
-//                } else {
-//                    inputStream = urlConnection.getErrorStream();
-//                }
-//                // parse stream
-//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-//                String temp, response = "";
-//                while ((temp = bufferedReader.readLine()) != null) {
-//                    response += temp;
-//                }
-//                return response;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return e.toString();
-//            } finally {
-//                if (urlConnection != null) {
-//                    urlConnection.disconnect();
-//                }
-//            }
-
-
-                // CASE 3: For form-urlencoded parameter
-//            String url = "http://10.0.2.2/api/token";
-//            HttpURLConnection urlConnection;
-//            Map<String, String> stringMap = new HashMap<>();
-//            stringMap.put("grant_type", "password");
-//            stringMap.put("username", "username");
-//            stringMap.put("password", "password");
-//            String requestBody = Utils.buildPostParameters(stringMap);
-//            try {
-//                urlConnection = (HttpURLConnection) Utils.makeRequest("POST", url, null, "application/x-www-form-urlencoded", requestBody);
-//                ...
-//                // the same logic to case #1
-//                ...
-//                return response;
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                return e.toString();
-//            } finally {
-//                if (urlConnection != null) {
-//                    urlConnection.disconnect();
-//                }
-//            }
-            }
-
-            @Override
-            protected void onPostExecute (String response){
-                super.onPostExecute(response);
-                // do something...
-            }
-        }
 }
 
