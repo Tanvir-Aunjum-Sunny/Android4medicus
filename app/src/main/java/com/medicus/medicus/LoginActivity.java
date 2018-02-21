@@ -1,16 +1,22 @@
 package com.medicus.medicus;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.AsyncTask;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.util.HashMap;
 
 /**
  * A login screen that offers login via email/password.
@@ -28,6 +35,9 @@ public class LoginActivity extends AppCompatActivity  {
     /**
      * Id to identity READ_CONTACTS permission request.
      */
+
+    private String otp;
+
     private String contact_no;
     private static final int REQUEST_READ_CONTACTS = 0;
 
@@ -44,7 +54,7 @@ public class LoginActivity extends AppCompatActivity  {
 //    private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private AutoCompleteTextView mEmailView,OTPView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -76,6 +86,43 @@ public class LoginActivity extends AppCompatActivity  {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        OTPView = (AutoCompleteTextView) findViewById(R.id.otp);
+
+            OTPView.addTextChangedListener(new TextWatcher() {
+                public void afterTextChanged(Editable s) {   //Convert the Text to String
+                    String inputText = OTPView.getText().toString();
+                    if (inputText.length() == 4) {
+                        if (inputText.equals("1234")) {
+                            Log.d("correct Pin", "Verfied");
+                            Toast.makeText(getApplicationContext(),
+                                    "Validated: Fuck You",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                            changeInstance();
+                        } else {
+                            Log.d("Incorrect Pin", "Not Verfied");
+                        }
+                    }
+                }
+
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    // Does not do any thing in this case
+                }
+
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    // Does not do any thing in this case
+                }
+            });
+
+
+    }
+
+    private void changeInstance(){
+        Intent main = new Intent(LoginActivity.this,
+                Selectillness.class);
+        LoginActivity.this.startActivity(main);
+        LoginActivity.this.finish();
     }
 
 //    private void populateAutoComplete() {
@@ -355,8 +402,27 @@ public class LoginActivity extends AppCompatActivity  {
                     while ((temp = bufferedReader.readLine()) != null) {
                         response += temp;
                     }
-                    Log.d("Response", response);
-                    return response;
+                    //get Value of otp
+                    if (response != null) {
+                        try {
+                            JSONObject jsonObj = new JSONObject(response);
+
+                            // Getting JSON Array node
+                            otp = jsonObj.get("pin").toString();
+                        Log.d("Response", otp);
+                        } catch (final JSONException e) {
+                            Log.e("JSON", "Json parsing error: " + e.getMessage());
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Json parsing error: " + e.getMessage(),
+                                            Toast.LENGTH_LONG)
+                                            .show();
+                                }
+                            });
+                        }
+                    }                    return response;
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                     return e.toString();
@@ -385,6 +451,7 @@ public class LoginActivity extends AppCompatActivity  {
             String url = "http://192.168.0.102:3000/api/v1/login/create";
             JSONObject jsonBody;
             String requestBody;
+            String temp, response = "";
             HttpURLConnection urlConnection = null;
             try {
                 jsonBody = new JSONObject();
@@ -402,11 +469,13 @@ public class LoginActivity extends AppCompatActivity  {
                 }
                 // parse stream
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                String temp, response = "";
+
                 while ((temp = bufferedReader.readLine()) != null) {
                     response += temp;
                 }
-                Log.d("Response",response);
+
+
+
                 return response;
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
@@ -417,7 +486,7 @@ public class LoginActivity extends AppCompatActivity  {
                 }
             }
 
-            // CASE 1: For FromBody parameter
+                // CASE 1: For FromBody parameter
 //            String url = "http://10.0.2.2/api/frombody";
 //            String requestBody = Utils.buildPostParameters("'FromBody Value'"); // must have '' for FromBody parameter
 //            HttpURLConnection urlConnection = null;
@@ -447,7 +516,7 @@ public class LoginActivity extends AppCompatActivity  {
 //            }
 
 
-            // CASE 3: For form-urlencoded parameter
+                // CASE 3: For form-urlencoded parameter
 //            String url = "http://10.0.2.2/api/token";
 //            HttpURLConnection urlConnection;
 //            Map<String, String> stringMap = new HashMap<>();
@@ -469,14 +538,13 @@ public class LoginActivity extends AppCompatActivity  {
 //                    urlConnection.disconnect();
 //                }
 //            }
-        }
+            }
 
-        @Override
-        protected void onPostExecute(String response) {
-            super.onPostExecute(response);
-            // do something...
+            @Override
+            protected void onPostExecute (String response){
+                super.onPostExecute(response);
+                // do something...
+            }
         }
-    }
-
 }
 
