@@ -217,6 +217,15 @@ public class SplashScreenActivity extends AppCompatActivity {
                         }
                     }                    return response;
                 } catch (JSONException | IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),
+                                    "Cannot Connect To Internet",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                    });
                     e.printStackTrace();
                     return e.toString();
                 } finally {
