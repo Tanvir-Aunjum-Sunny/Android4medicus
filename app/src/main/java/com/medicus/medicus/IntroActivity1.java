@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -56,9 +58,11 @@ public class IntroActivity1 extends AppCompatActivity {
 
     RelativeLayout sliderDotspanel;
     private int dotscount;
-    private ImageView[] dots;
+//    private ImageView[] dots;
 
     Button skip,register;
+    private TextView[] dots;
+    private LinearLayout ll_dots;
 
 
     @Override
@@ -70,12 +74,14 @@ public class IntroActivity1 extends AppCompatActivity {
 
         if(share.getInt("isIntroDone",0) ==1){
             Intent main = new Intent(IntroActivity1.this,
-                    LoginActivity.class);
+                    HomeScreenActivity.class);
             IntroActivity1.this.startActivity(main);
             IntroActivity1.this.finish();
         }
 
+        ll_dots = (LinearLayout) findViewById(R.id.ll_dots);
         init();
+        addBottomDots(0);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -110,13 +116,13 @@ public class IntroActivity1 extends AppCompatActivity {
     }
 
     public void changeInstance(int chk){
-        Intent main;
+        Intent main =null;
         if(chk == 0) {
             main = new Intent(IntroActivity1.this,
                     LoginActivity.class);
-        } else{
+        } else if(chk == 1){
             main = new Intent(IntroActivity1.this,
-                    LoginActivity.class);
+                    HomeScreenActivity.class);
 
             SharedPreferences share = getSharedPreferences("PREFS", MODE_PRIVATE);
             SharedPreferences.Editor editor;
@@ -137,13 +143,46 @@ public class IntroActivity1 extends AppCompatActivity {
 //        differentDensityAndScreenSize(getApplicationContext());
         List<Fragment> fragments = getFragments();
         mViewPager.setAdapter(obj_adapter);
-        mViewPager.setClipToPadding(false);
+        mViewPager.setClipToPadding(true);
 
 
 
         obj_adapter = new MyPageAdapter(getSupportFragmentManager(), fragments);
         mViewPager.setPageTransformer(true, new ExpandingViewPagerTransformer());
         mViewPager.setAdapter(obj_adapter);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                addBottomDots(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+    private void addBottomDots(int currentPage) {
+        dots = new TextView[3];
+
+        ll_dots.removeAllViews();
+        for (int i = 0; i < dots.length; i++) {
+            dots[i] = new TextView(this);
+            dots[i].setText(Html.fromHtml("&#8226;"));
+            dots[i].setTextSize(35);
+            dots[i].setTextColor(Color.parseColor("#24a38b"));
+            ll_dots.addView(dots[i]);
+        }
+
+        if (dots.length > 0)
+            dots[currentPage].setTextColor(Color.parseColor("#123c6e"));
     }
 
     class MyPageAdapter extends FragmentPagerAdapter {

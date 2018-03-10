@@ -3,6 +3,10 @@ package com.medicus.medicus;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
@@ -27,12 +31,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.util.HashMap;
+import android.widget.ViewFlipper;
+
+import com.goodiebag.pinview.Pinview;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity  {
+public class LoginActivity extends AppCompatActivity {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -57,9 +63,11 @@ public class LoginActivity extends AppCompatActivity  {
 //    private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView,OTPView;
+    private AutoCompleteTextView mEmailView;
     private View mProgressView;
     private View mLoginFormView;
+    ViewFlipper viewFilpper;
+    Button mEmailSignInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,19 +77,29 @@ public class LoginActivity extends AppCompatActivity  {
         if (actionBar != null) {
             actionBar.hide();
         }
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        viewFilpper = (ViewFlipper) findViewById(R.id.login_flipper);
 //        populateAutoComplete();
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    postRequest();
-                } catch (Exception e) {
-                    Log.e("Url","URL Exception");
-                    e.printStackTrace();
+                if(mEmailView.getText().toString().length()==10){
+                    viewFilpper.showNext();
+                    try {
+                        postRequest();
+                    } catch (Exception e) {
+                        Log.e("Url", "URL Exception");
+                        e.printStackTrace();
+                    }
+                }else {
+                    Toast.makeText(getApplicationContext(),
+                            "Invalid Number",
+                            Toast.LENGTH_LONG)
+                            .show();
                 }
             }
         });
@@ -89,35 +107,43 @@ public class LoginActivity extends AppCompatActivity  {
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
-        OTPView = (AutoCompleteTextView) findViewById(R.id.otp);
+        Pinview pinview = (Pinview) findViewById(R.id.pinview);
 
-            OTPView.addTextChangedListener(new TextWatcher() {
-                public void afterTextChanged(Editable s) {   //Convert the Text to String
-                    String inputText = OTPView.getText().toString();
-                    if (inputText.length() == 4) {
-                        if (inputText.equals(otp)) {
-                            Log.d("correct Pin", "Verfied");
-                            Toast.makeText(getApplicationContext(),
-                                    "Validated: Fuck You",
-                                    Toast.LENGTH_LONG)
-                                    .show();
-                            changeInstance();
-                        } else {
-                            Log.d("Incorrect Pin", "Not Verfied");
-                        }
+        pinview.setPinViewEventListener(new Pinview.PinViewEventListener() {
+            @Override
+            public void onDataEntered(Pinview pinview, boolean fromUser) {
+                //Make api calls here or what not
+                String inputText = pinview.getValue();
+                if (inputText.length() == 4) {
+                    if (inputText.equals(otp)) {
+                        Log.d("correct Pin", "Verfied");
+                        Toast.makeText(getApplicationContext(),
+                                "Validated: Welcome",
+                                Toast.LENGTH_LONG)
+                                .show();
+                        changeInstance();
+                    } else {
+                        Toast.makeText(getApplicationContext(),
+                                "Incorrect Pin",
+                                Toast.LENGTH_LONG)
+                                .show();
+                        Log.d("Incorrect Pin", "Not Verfied");
                     }
                 }
-
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    // Does not do any thing in this case
-                }
-
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    // Does not do any thing in this case
-                }
-            });
+            }
+        });
 
 
+    }
+
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        Intent main = new Intent(LoginActivity.this,
+                IntroActivity1.class);
+        main.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        LoginActivity.this.startActivity(main);
+        LoginActivity.this.finish();
     }
 
     private void changeInstance(){
@@ -134,8 +160,6 @@ public class LoginActivity extends AppCompatActivity  {
         LoginActivity.this.startActivity(main);
         LoginActivity.this.finish();
     }
-
-
 
     private void postRequest() {
         contact_no = mEmailView.getText().toString();
@@ -169,28 +193,8 @@ public class LoginActivity extends AppCompatActivity  {
                     while ((temp = bufferedReader.readLine()) != null) {
                         response += temp;
                     }
-                    //get Value of otp
-                    if (response != null) {
-                        try {
-                            JSONObject jsonObj = new JSONObject(response);
 
-                            // Getting JSON Array node
-                            otp = jsonObj.get("pin").toString();
-                            token = jsonObj.get("JWT").toString();
-                        Log.d("Response", token);
-                        } catch (final JSONException e) {
-                            Log.e("JSON", "Json parsing error: " + e.getMessage());
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Json parsing error: " + e.getMessage(),
-                                            Toast.LENGTH_LONG)
-                                            .show();
-                                }
-                            });
-                        }
-                    }                    return response;
+                    return response;
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                     return e.toString();
@@ -205,6 +209,28 @@ public class LoginActivity extends AppCompatActivity  {
             protected void onPostExecute(String response) {
                 super.onPostExecute(response);
                 // do something...
+                //get Value of otp
+                if (response != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(response);
+
+                        // Getting JSON Array node
+                        otp = jsonObj.get("pin").toString();
+                        token = jsonObj.get("JWT").toString();
+                        Log.d("Response", token);
+                    } catch (final JSONException e) {
+                        Log.e("JSON", "Json parsing error: " + e.getMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(),
+                                        "Json parsing error: " + e.getMessage(),
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
+                    }
+                }
             }
         };
         async.execute();

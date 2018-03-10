@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background1">
+    android:background="@drawable/gradient_background">
 
     <ImageView
+        android:id="@+id/imageView3"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="0dp"
         android:contentDescription="@string/app_name"
-        app:srcCompat="@drawable/logo"
-        android:id="@+id/imageView3" />
+        app:srcCompat="@drawable/logo" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/container"
@@ -24,13 +24,18 @@
         android:layout_marginBottom="100dp">
 
     </android.support.v4.view.ViewPager>
+
     <LinearLayout
-        android:id="@+id/SliderDots"
-        android:layout_above="@+id/button2"
-        android:orientation="horizontal"
-        android:gravity="center_vertical|center_horizontal"
+        android:id="@+id/ll_dots"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="50dp"
+        android:layout_above="@id/button2"
+        android:layout_alignBottom="@+id/container"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="0dp"
+        android:gravity="center"
+        android:orientation="horizontal"></LinearLayout>
 
     <Button
         android:id="@+id/button5"
@@ -47,8 +52,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/button5"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:background="@drawable/button_layout"
         android:text="Register"
         android:textColor="@android:color/background_light" />

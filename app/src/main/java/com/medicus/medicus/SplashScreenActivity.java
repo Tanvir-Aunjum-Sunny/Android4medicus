@@ -113,7 +113,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
-        mHideHandler.postDelayed(changeInstance, 1500);
+        mHideHandler.postDelayed(changeInstance, 1000);
     }
 
     @Override
@@ -195,27 +195,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     while ((temp = bufferedReader.readLine()) != null) {
                         response += temp;
                     }
-                    //get Value of otp
-                    if (response != null) {
-                        try {
-                            JSONObject jsonObj = new JSONObject(response);
-                            String verification = jsonObj.get("status").toString();
-                            Log.d("__TOKEN__",verify_token);
-                            checkLogin(verification);
-
-                        } catch (final JSONException e) {
-                            Log.e("JSON", "Json parsing error: " + e.getMessage());
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Json parsing error: " + e.getMessage(),
-                                            Toast.LENGTH_LONG)
-                                            .show();
-                                }
-                            });
-                        }
-                    }                    return response;
+                    return response;
                 } catch (JSONException | IOException e) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -224,8 +204,13 @@ public class SplashScreenActivity extends AppCompatActivity {
                                     "Cannot Connect To Internet",
                                     Toast.LENGTH_LONG)
                                     .show();
+                            Intent main = new Intent(SplashScreenActivity.this,
+                                    HomeScreenActivity.class);
+                            SplashScreenActivity.this.startActivity(main);
+                            SplashScreenActivity.this.finish();
                         }
                     });
+
                     e.printStackTrace();
                     return e.toString();
                 } finally {
@@ -239,6 +224,27 @@ public class SplashScreenActivity extends AppCompatActivity {
             protected void onPostExecute(String response) {
                 super.onPostExecute(response);
                 // do something...
+                //get Value of otp
+                if (response != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(response);
+                        String verification = jsonObj.get("status").toString();
+                        Log.d("__TOKEN__",verify_token);
+                        checkLogin(verification);
+
+                    } catch (final JSONException e) {
+                        Log.e("JSON", "Json parsing error: " + e.getMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(),
+                                        "Json parsing error: " + e.getMessage(),
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
+                    }
+                }
             }
         };
         async.execute();
@@ -247,7 +253,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void checkLogin(String status){
         if(status.equals("true")){
-
             Log.d("TO Illnesss screen","Verified");
             Intent main = new Intent(SplashScreenActivity.this,
                     Selectillness.class);
@@ -260,10 +265,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                     IntroActivity1.class);
             SplashScreenActivity.this.startActivity(main);
             SplashScreenActivity.this.finish();
-//            Intent main = new Intent(SplashScreenActivity.this,
-//                    LoginActivity.class);
-//            SplashScreenActivity.this.startActivity(main);
-//            SplashScreenActivity.this.finish();
         }
     }
 
