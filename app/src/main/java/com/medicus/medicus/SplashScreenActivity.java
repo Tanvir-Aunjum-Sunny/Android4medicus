@@ -234,15 +234,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                     } catch (final JSONException e) {
                         Log.e("JSON", "Json parsing error: " + e.getMessage());
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getApplicationContext(),
-                                        "Json parsing error: " + e.getMessage(),
-                                        Toast.LENGTH_LONG)
-                                        .show();
-                            }
-                        });
                     }
                 }
             }

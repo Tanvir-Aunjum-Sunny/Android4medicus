@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -52,6 +55,10 @@ public class HomeScreenActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+//        mTextMessage = (TextView) findViewById(R.id.message);
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationViewHelper.disableShiftMode(navigation);
     }
 
     private void checkLogin() {
@@ -75,10 +82,32 @@ public class HomeScreenActivity extends AppCompatActivity
         }
     }
 
+//    private TextView mTextMessage;
+//
+//    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+//            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+//
+//        @Override
+//        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//            switch (item.getItemId()) {
+//                case R.id.navigation_home:
+//                    mTextMessage.setText("Home");
+//                    return true;
+//                case R.id.navigation_dashboard:
+//                    mTextMessage.setText("Dashboard");
+//                    return true;
+//                case R.id.navigation_notifications:
+//                    mTextMessage.setText("Notifications");
+//                    return true;
+//            }
+//            return false;
+//        }
+//    };
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home_screen, menu);
+        getMenuInflater().inflate(R.menu.notification_menu, menu);
         return true;
     }
 
@@ -90,7 +119,7 @@ public class HomeScreenActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.notification) {
             return true;
         }
 
@@ -214,20 +243,11 @@ public class HomeScreenActivity extends AppCompatActivity
                         JSONObject jsonObj = new JSONObject(response);
                         String verification = jsonObj.get("status").toString();
                         verify = verification;
-                        checkLogin();
                     } catch (final JSONException e) {
                         Log.e("JSON", "Json parsing error: " + e.getMessage());
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getApplicationContext(),
-                                        "Json parsing error: " + e.getMessage(),
-                                        Toast.LENGTH_LONG)
-                                        .show();
-                            }
-                        });
                     }
                 }
+                checkLogin();
             }
         };
         async.execute();
