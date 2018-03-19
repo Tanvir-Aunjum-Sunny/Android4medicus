@@ -1,15 +1,27 @@
 package com.medicus.medicus;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.SearchView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,6 +31,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,15 +54,24 @@ public class HomeScreenActivity extends AppCompatActivity
 
     private String verify = "false";
     NavigationView nav_view;
+    ViewPager viewPager;
+    User_Profile user_profile;
+    Appointments appointments;
+    ContentHomeScreen contentHomeScreen;
+    Favourite favourite;
+    BottomNavigationView navigation;
+    MenuItem prevMenuItem;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         nav_view = (NavigationView) findViewById(R.id.nav_view);
-
+        viewPager = findViewById(R.id.viewpager);
         this.postRequest();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -57,8 +84,61 @@ public class HomeScreenActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 //        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
+
+        viewPager.addOnPageChangeListener(onPageChangeListener);
+        setupViewPager(viewPager);
+
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        user_profile = new User_Profile();
+        appointments = new Appointments();
+        contentHomeScreen = new ContentHomeScreen();
+        favourite = new Favourite();
+        viewPagerAdapter.addFragment(contentHomeScreen);
+        viewPagerAdapter.addFragment(appointments);
+        viewPagerAdapter.addFragment(favourite);
+        viewPagerAdapter.addFragment(user_profile);
+        viewPager.setAdapter(viewPagerAdapter);
+    }
+
+    private ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener(){
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            if (prevMenuItem != null) {
+                prevMenuItem.setChecked(false);
+            } else {
+                navigation.getMenu().getItem(0).setChecked(false);
+            }
+            Log.d("page", "onPageSelected: " + position);
+            navigation.getMenu().getItem(position).setChecked(true);
+            prevMenuItem = navigation.getMenu().getItem(position);
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+        }
+    };
+
+    private boolean loadFragment(android.support.v4.app.Fragment fragment){
+
+        if(fragment!=null){
+//            getSupportFragmentManager()
+//                    .beginTransaction()
+//                    .replace(R.id.fragment_layout,fragment)
+//                    .commit();
+            return true;
+        }
+        return false;
     }
 
     private void checkLogin() {
@@ -82,27 +162,34 @@ public class HomeScreenActivity extends AppCompatActivity
         }
     }
 
-//    private TextView mTextMessage;
-//
-//    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-//            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-//
-//        @Override
-//        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//            switch (item.getItemId()) {
-//                case R.id.navigation_home:
-//                    mTextMessage.setText("Home");
-//                    return true;
-//                case R.id.navigation_dashboard:
-//                    mTextMessage.setText("Dashboard");
-//                    return true;
-//                case R.id.navigation_notifications:
-//                    mTextMessage.setText("Notifications");
-//                    return true;
-//            }
-//            return false;
-//        }
-//    };
+        private TextView mTextMessage;
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            android.support.v4.app.Fragment fragment = null;
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+//                    fragment = new ContentHomeScreen();
+                    viewPager.setCurrentItem(0);
+                    break;
+                case R.id.appointments:
+//                    fragment = new Appointments();
+                    viewPager.setCurrentItem(1);
+                    break;
+                case R.id.likes:
+                    viewPager.setCurrentItem(2);
+                    return true;
+                case R.id.profile:
+//                    fragment = new User_Profile();
+                    viewPager.setCurrentItem(3);
+                    break;
+            }
+            return true;
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -120,6 +207,12 @@ public class HomeScreenActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.notification) {
+            Toast.makeText(getApplicationContext(),"Notification",Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if (id == R.id.navigation_home){
+            startActivity(new Intent(HomeScreenActivity.this,User_Profile.class));
+//            Toast.makeText(getApplicationContext(),"Hello BC",Toast.LENGTH_SHORT).show();
             return true;
         }
 
@@ -129,12 +222,20 @@ public class HomeScreenActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        android.support.v4.app.Fragment fragment = null;
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
             // Handle the camera action
+//            fragment = new User_Profile();
+            viewPager.setCurrentItem(3);
+//            startActivity(new Intent(HomeScreenActivity.this,User_Profile.class));
+
         } else if (id == R.id.nav_appointment) {
+//            fragment = new Appointments();
+            viewPager.setCurrentItem(1);
+//            startActivity(new Intent(HomeScreenActivity.this,Appointments.class));
 
         } else if (id == R.id.nav_reminder) {
 
@@ -175,6 +276,7 @@ public class HomeScreenActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
 
 

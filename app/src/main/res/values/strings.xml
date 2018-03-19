@@ -32,4 +32,48 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="Todo">user_image</string>
+
+    <!-- Strings related to LayoutSearch -->
+    <string-array name="title">
+        <item>Name-1</item>
+        <item>Name-2</item>
+        <item>Name-3</item>
+        <item>Name-4</item>
+        <item>Name-5</item>
+        <item>Name-6</item>
+    </string-array>
+    <string-array name="designation">
+        <item>Designation-1</item>
+        <item>Designation-2</item>
+        <item>Designation-3</item>
+        <item>Designation-4</item>
+        <item>Designation-5</item>
+        <item>Designation-6</item>
+    </string-array>
+    <string-array name="description">
+        <item>Description-1</item>
+        <item>Description-2</item>
+        <item>Description-3</item>
+        <item>Description-4</item>
+        <item>Description-5</item>
+        <item>Description-6</item>
+    </string-array>
+    <!-- Strings related to Appointments -->
+    <string-array name="name">
+        <item>Name-1</item>
+        <item>Name-2</item>
+        <item>Name-3</item>
+        <item>Name-4</item>
+        <item>Name-5</item>
+        <item>Name-6</item>
+    </string-array>
+    <string-array name="details">
+        <item>details</item>
+        <item>details</item>
+        <item>details</item>
+        <item>details</item>
+        <item>details</item>
+        <item>details</item>
+    </string-array>
 </resources>

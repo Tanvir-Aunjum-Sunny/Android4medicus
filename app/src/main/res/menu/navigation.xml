@@ -4,6 +4,7 @@
 
     <item
         android:id="@+id/navigation_home"
+        android:checked="true"
         android:icon="@drawable/calender"
         android:title=""
         app:showAsAction="always" />
@@ -16,12 +17,12 @@
 
     <item
         android:id="@+id/likes"
-        android:icon="@drawable/ic_menu_manage"
+        android:icon="@drawable/ic_favorite_black_24dp"
         android:title=""
         app:showAsAction="always" />
     <item
         android:id="@+id/profile"
-        android:icon="@drawable/ic_menu_manage"
+        android:icon="@drawable/ic_person_black_24dp"
         android:title=""
         app:showAsAction="always" />
 

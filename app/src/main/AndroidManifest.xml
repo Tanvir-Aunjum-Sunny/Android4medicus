@@ -35,7 +35,8 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:screenOrientation="portrait"
-            android:parentActivityName=".IntroActivity1"/>
+            android:parentActivityName=".IntroActivity1"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".Selectillness"
             android:screenOrientation="portrait" />
@@ -43,7 +44,8 @@
             android:name=".HomeScreenActivity"
             android:label="Home"
             android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
     </application>
 
 </manifest>
