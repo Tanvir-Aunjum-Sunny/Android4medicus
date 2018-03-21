@@ -195,8 +195,10 @@ public class SplashScreenActivity extends AppCompatActivity {
                     while ((temp = bufferedReader.readLine()) != null) {
                         response += temp;
                     }
-//                    Log.d("Response",String.valueOf(urlConnection.getResponseCode()));
+                    Log.d("Response",String.valueOf(urlConnection.getResponseCode()));
                     //Save the __TOKEN__ first and change the instance
+                    JSONObject Json_Response = new JSONObject(response);
+//                    Log.d("Json-Response",Json_Response);
                     SharedPreferences share = getSharedPreferences("PREFS", MODE_PRIVATE);
                     SharedPreferences.Editor editor;
                     editor = share.edit();
