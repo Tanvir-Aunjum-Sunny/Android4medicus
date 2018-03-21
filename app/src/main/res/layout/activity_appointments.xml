@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#edf8f4"
     android:orientation="vertical"
     tools:context="com.medicus.medicus.Appointments">
+
     <ListView
         android:id="@+id/appointments_list"
         android:layout_width="match_parent"
@@ -13,6 +15,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        />
+        android:divider="@null" />
 
 </LinearLayout>

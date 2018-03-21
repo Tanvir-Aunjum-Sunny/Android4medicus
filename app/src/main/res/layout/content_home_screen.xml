@@ -4,37 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#edf8f4"
+    android:orientation="horizontal"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.medicus.medicus.HomeScreenActivity"
-    android:orientation="horizontal">
+    tools:context="com.medicus.medicus.HomeScreenActivity">
 
         <RelativeLayout
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="#f5f5f5">
-
-                <ImageView
-                    android:id="@+id/search_button"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginTop="10dp"
-                    android:src="@drawable/ic_search_black_24dp"></ImageView>
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:elevation="4dp"
+            android:paddingBottom="7dp"
+            android:paddingTop="7dp">
 
                 <EditText
                     android:id="@+id/search_src_text"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="50dp"
-                    android:background="@android:color/transparent"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="#ffffff"
                     android:defaultFocusHighlightEnabled="false"
-                    android:hint="Search"
+                    android:drawableLeft="@drawable/ic_search_black_24dp"
+                    android:drawablePadding="5dp"
+                    android:drawableStart="@drawable/ic_search_black_24dp"
+                    android:drawableTint="#b3b3b3"
+                    android:elevation="2dp"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:paddingTop="5dp"
                     android:singleLine="true"
                     android:textColor="#000"
-                    android:textSize="20sp" />
+                    android:textSize="15sp" />
         </RelativeLayout>
 
         <ListView
@@ -43,5 +47,6 @@
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/search_bar" />
+            android:layout_below="@+id/search_bar"
+            android:divider="@null" />
 </RelativeLayout>

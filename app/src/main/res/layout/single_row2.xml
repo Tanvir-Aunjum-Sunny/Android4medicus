@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <RelativeLayout
+        android:id="@+id/one"
         android:layout_width="match_parent"
         android:layout_height="72dp"
-        android:id="@+id/one"
-        android:background="#ccc">
-        <ImageView
-            android:id="@+id/appointment_image"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="16dp"
-            android:layout_alignParentLeft="true"
-            android:src="@mipmap/ic_account_circle_white_24dp"/>
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:background="#ffffff"
+        android:elevation="3dp">
+        <!--<ImageView-->
+        <!--android:id="@+id/appointment_image"-->
+        <!--android:layout_width="40dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_marginLeft="16dp"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:src="@mipmap/ic_account_circle_white_24dp"/>-->
         <TextView
             android:id="@+id/appointment_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Doctor Name"
-            android:fontFamily="Roboto Regular"
             android:layout_marginLeft="72dp"
             android:layout_marginTop="13dp"
+            android:fontFamily="Roboto Regular"
+            android:text="Doctor Name"
             android:textColor="#000"
             android:textSize="16sp" />
+
         <TextView
             android:id="@+id/appointment_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Details"
-            android:fontFamily="Roboto Regular"
             android:layout_marginLeft="72dp"
             android:layout_marginTop="30dp"
+            android:fontFamily="Roboto Regular"
+            android:text="Details"
             android:textColor="#000"
             android:textSize="14sp" />
-        <ImageView
-            android:id="@+id/appointment_arrow"
-            android:layout_width="50dp"
-            android:layout_height="30dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginEnd="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginRight="15dp"
-            android:src="@mipmap/ic_keyboard_arrow_right_black_24dp"></ImageView>
+        <!--<ImageView-->
+        <!--android:id="@+id/appointment_arrow"-->
+        <!--android:layout_width="50dp"-->
+        <!--android:layout_height="30dp"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_marginEnd="15dp"-->
+        <!--android:layout_marginTop="15dp"-->
+        <!--android:layout_marginRight="15dp"-->
+        <!--android:src="@mipmap/ic_keyboard_arrow_right_black_24dp"></ImageView>-->
 
     </RelativeLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0.7dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/one"
-        android:background="@drawable/textline" />
 
 </LinearLayout>

@@ -53,11 +53,11 @@ class Adapter1 extends ArrayAdapter<String> {
         LayoutInflater inflater=(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View row=inflater.inflate(R.layout.single_row2,parent,false);
 
-        ImageView listImage=(ImageView) row.findViewById(R.id.appointment_image);
+//        ImageView listImage=(ImageView) row.findViewById(R.id.appointment_image);
         TextView listName=(TextView)row.findViewById(R.id.appointment_name);
         TextView listDetail=(TextView)row.findViewById(R.id.appointment_detail);
 
-        listImage.setImageResource(images[position]);
+//        listImage.setImageResource(images[position]);
         listName.setText(titleArray[position]);
         listDetail.setText(detailArray[position]);
 

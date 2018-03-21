@@ -171,15 +171,15 @@ public class SplashScreenActivity extends AppCompatActivity {
             protected String doInBackground(Void... params) {
 
                 // CASE 2: For JSONObject parameter
-                String url = "http://192.168.0.102:3000/api/v1/login/verify";
+                String url = "http://192.168.0.102:3000/api/v1/search";
                 JSONObject jsonBody;
                 String requestBody;
                 HttpURLConnection urlConnection = null;
                 try {
                     jsonBody = new JSONObject();
-                    jsonBody.put("JWT", verify_token);
+                    jsonBody.put("getAllSpecialization", "1");
                     requestBody = Utils.buildPostParameters(jsonBody);
-                    urlConnection = (HttpURLConnection) Utils.makeRequest("POST", url, null, "application/json", requestBody);
+                    urlConnection = (HttpURLConnection) Utils.makeRequest("POST", url, verify_token, "application/json", requestBody);
 
                     // the same logic to case #1
                     InputStream inputStream;
@@ -195,6 +195,15 @@ public class SplashScreenActivity extends AppCompatActivity {
                     while ((temp = bufferedReader.readLine()) != null) {
                         response += temp;
                     }
+//                    Log.d("Response",String.valueOf(urlConnection.getResponseCode()));
+                    //Save the __TOKEN__ first and change the instance
+                    SharedPreferences share = getSharedPreferences("PREFS", MODE_PRIVATE);
+                    SharedPreferences.Editor editor;
+                    editor = share.edit();
+                    editor.putString("AllSpecialization",response);
+                    editor.apply();
+                    Log.d("Specialization",share.getString("AllSpecialization",""));
+                    response = String.valueOf(urlConnection.getResponseCode());
                     return response;
                 } catch (JSONException | IOException e) {
                     runOnUiThread(new Runnable() {
@@ -225,16 +234,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                 super.onPostExecute(response);
                 // do something...
                 //get Value of otp
-                if (response != null) {
-                    try {
-                        JSONObject jsonObj = new JSONObject(response);
-                        String verification = jsonObj.get("status").toString();
-                        Log.d("__TOKEN__",verify_token);
+                Log.d("ResponseCode",response);
+                if (response.equals("403")) {
+                        String verification = "false";
                         checkLogin(verification);
-
-                    } catch (final JSONException e) {
-                        Log.e("JSON", "Json parsing error: " + e.getMessage());
-                    }
+                } else if(response.equals("200")){
+                    checkLogin("true");
                 }
             }
         };
@@ -249,9 +254,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                     Selectillness.class);
             SplashScreenActivity.this.startActivity(main);
             SplashScreenActivity.this.finish();
-        } else{
+        } else if(status.equals("false")){
             Log.d("TO Login screen","Not Verified");
-
             Intent main = new Intent(SplashScreenActivity.this,
                     IntroActivity1.class);
             SplashScreenActivity.this.startActivity(main);

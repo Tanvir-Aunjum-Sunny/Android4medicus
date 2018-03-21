@@ -10,7 +10,7 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/appointments"
+        android:id="@+id/reminder"
         android:icon="@drawable/clock"
         android:title=""
         app:showAsAction="always" />

@@ -55,12 +55,15 @@ public class HomeScreenActivity extends AppCompatActivity
     private String verify = "false";
     NavigationView nav_view;
     ViewPager viewPager;
+    BottomNavigationView navigation;
+    MenuItem prevMenuItem;
+
+    //Fragment Variables
     User_Profile user_profile;
     Appointments appointments;
     ContentHomeScreen contentHomeScreen;
     Favourite favourite;
-    BottomNavigationView navigation;
-    MenuItem prevMenuItem;
+    Reminder reminder;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -83,7 +86,6 @@ public class HomeScreenActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-//        mTextMessage = (TextView) findViewById(R.id.message);
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
@@ -99,10 +101,12 @@ public class HomeScreenActivity extends AppCompatActivity
         appointments = new Appointments();
         contentHomeScreen = new ContentHomeScreen();
         favourite = new Favourite();
-        viewPagerAdapter.addFragment(contentHomeScreen);
-        viewPagerAdapter.addFragment(appointments);
-        viewPagerAdapter.addFragment(favourite);
-        viewPagerAdapter.addFragment(user_profile);
+        reminder = new Reminder();
+        viewPagerAdapter.addFragment(contentHomeScreen);    // Index: 0
+        viewPagerAdapter.addFragment(reminder);             // Index: 1
+        viewPagerAdapter.addFragment(favourite);            // Index: 2
+        viewPagerAdapter.addFragment(user_profile);         // Index: 3
+        viewPagerAdapter.addFragment(appointments);         // Index: 4
         viewPager.setAdapter(viewPagerAdapter);
     }
 
@@ -119,27 +123,36 @@ public class HomeScreenActivity extends AppCompatActivity
                 navigation.getMenu().getItem(0).setChecked(false);
             }
             Log.d("page", "onPageSelected: " + position);
-            navigation.getMenu().getItem(position).setChecked(true);
-            prevMenuItem = navigation.getMenu().getItem(position);
-
+            switch (position){
+                case 0:
+                    navigation.getMenu().getItem(0).setChecked(true);
+                    break;
+                case 1:
+                    navigation.getMenu().getItem(1).setChecked(true);
+//                    navigation.getMenu().getItem(position).setChecked(true);
+                    break;
+                case 2:
+                    navigation.getMenu().getItem(2).setChecked(true);
+                    break;
+                case 3:
+                    navigation.getMenu().getItem(3).setChecked(true);
+                    break;
+                case 4:
+                    // My Appointent Screen from the Drawer Menu
+                    int  id = navigation.getSelectedItemId();
+                    Log.d("Item Id",String.valueOf(id));
+                    navigation.getMenu().findItem(id).setChecked(true);
+                    break;
+            }
+            if(position < 4) {
+                Log.d("Position",String.valueOf(position));
+                prevMenuItem = navigation.getMenu().getItem(position);
+            }
         }
-
         @Override
         public void onPageScrollStateChanged(int state) {
         }
     };
-
-    private boolean loadFragment(android.support.v4.app.Fragment fragment){
-
-        if(fragment!=null){
-//            getSupportFragmentManager()
-//                    .beginTransaction()
-//                    .replace(R.id.fragment_layout,fragment)
-//                    .commit();
-            return true;
-        }
-        return false;
-    }
 
     private void checkLogin() {
         if (verify.equals("false")) {
@@ -162,8 +175,6 @@ public class HomeScreenActivity extends AppCompatActivity
         }
     }
 
-        private TextView mTextMessage;
-
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -175,7 +186,7 @@ public class HomeScreenActivity extends AppCompatActivity
 //                    fragment = new ContentHomeScreen();
                     viewPager.setCurrentItem(0);
                     break;
-                case R.id.appointments:
+                case R.id.reminder:
 //                    fragment = new Appointments();
                     viewPager.setCurrentItem(1);
                     break;
@@ -210,11 +221,6 @@ public class HomeScreenActivity extends AppCompatActivity
             Toast.makeText(getApplicationContext(),"Notification",Toast.LENGTH_SHORT).show();
             return true;
         }
-        if (id == R.id.navigation_home){
-            startActivity(new Intent(HomeScreenActivity.this,User_Profile.class));
-//            Toast.makeText(getApplicationContext(),"Hello BC",Toast.LENGTH_SHORT).show();
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -234,7 +240,7 @@ public class HomeScreenActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_appointment) {
 //            fragment = new Appointments();
-            viewPager.setCurrentItem(1);
+            viewPager.setCurrentItem(4);
 //            startActivity(new Intent(HomeScreenActivity.this,Appointments.class));
 
         } else if (id == R.id.nav_reminder) {
