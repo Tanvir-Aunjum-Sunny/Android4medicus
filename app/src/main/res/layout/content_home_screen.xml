@@ -18,8 +18,8 @@
             android:paddingBottom="7dp"
             android:paddingTop="7dp">
 
-                <EditText
-                    android:id="@+id/search_src_text"
+                <AutoCompleteTextView
+                    android:id="@+id/search_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -38,7 +38,10 @@
                     android:paddingTop="5dp"
                     android:singleLine="true"
                     android:textColor="#000"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:completionThreshold="1">
+                    <requestFocus />
+                </AutoCompleteTextView>
         </RelativeLayout>
 
         <ListView

@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -71,9 +72,9 @@ public class HomeScreenActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        nav_view = (NavigationView) findViewById(R.id.nav_view);
+        nav_view =  findViewById(R.id.nav_view);
         viewPager = findViewById(R.id.viewpager);
         this.postRequest();
 
@@ -83,8 +84,7 @@ public class HomeScreenActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        nav_view.setNavigationItemSelectedListener(this);
 
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -122,7 +122,7 @@ public class HomeScreenActivity extends AppCompatActivity
             } else {
                 navigation.getMenu().getItem(0).setChecked(false);
             }
-            Log.d("page", "onPageSelected: " + position);
+//            Log.d("page", "onPageSelected: " + position);
             switch (position){
                 case 0:
                     navigation.getMenu().getItem(0).setChecked(true);
@@ -138,7 +138,7 @@ public class HomeScreenActivity extends AppCompatActivity
                     navigation.getMenu().getItem(3).setChecked(true);
                     break;
                 case 4:
-                    // My Appointent Screen from the Drawer Menu
+                    // My Appointment Screen from the Drawer Menu
                     int  id = navigation.getSelectedItemId();
                     Log.d("Item Id",String.valueOf(id));
                     navigation.getMenu().findItem(id).setChecked(true);

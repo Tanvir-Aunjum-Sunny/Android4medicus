@@ -21,8 +21,8 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_margin="10dp"
-            android:background="#ccc"
-            android:src="@drawable/bill"></ImageView>
+            android:background="#fff"
+            android:src="@drawable/ic_account_circle_white_24dp"></ImageView>
 
         <TextView
             android:id="@+id/listName"

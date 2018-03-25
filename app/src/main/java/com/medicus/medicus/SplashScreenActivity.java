@@ -197,14 +197,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                     }
                     Log.d("Response",String.valueOf(urlConnection.getResponseCode()));
                     //Save the __TOKEN__ first and change the instance
-                    JSONObject Json_Response = new JSONObject(response);
-//                    Log.d("Json-Response",Json_Response);
                     SharedPreferences share = getSharedPreferences("PREFS", MODE_PRIVATE);
                     SharedPreferences.Editor editor;
                     editor = share.edit();
                     editor.putString("AllSpecialization",response);
                     editor.apply();
-                    Log.d("Specialization",share.getString("AllSpecialization",""));
+//                    Log.d("Specialization",share.getString("AllSpecialization",""));
                     response = String.valueOf(urlConnection.getResponseCode());
                     return response;
                 } catch (JSONException | IOException e) {
@@ -251,13 +249,13 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void checkLogin(String status){
         if(status.equals("true")){
-            Log.d("TO Illnesss screen","Verified");
+//            Log.d("TO Illnesss screen","Verified");
             Intent main = new Intent(SplashScreenActivity.this,
                     Selectillness.class);
             SplashScreenActivity.this.startActivity(main);
             SplashScreenActivity.this.finish();
         } else if(status.equals("false")){
-            Log.d("TO Login screen","Not Verified");
+//            Log.d("TO Login screen","Not Verified");
             Intent main = new Intent(SplashScreenActivity.this,
                     IntroActivity1.class);
             SplashScreenActivity.this.startActivity(main);
