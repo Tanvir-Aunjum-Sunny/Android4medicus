@@ -76,7 +76,7 @@ public class HomeScreenActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         nav_view =  findViewById(R.id.nav_view);
         viewPager = findViewById(R.id.viewpager);
-        this.postRequest();
+//        this.postRequest();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -92,7 +92,13 @@ public class HomeScreenActivity extends AppCompatActivity
 
         viewPager.addOnPageChangeListener(onPageChangeListener);
         setupViewPager(viewPager);
+        viewPager.beginFakeDrag();
+    }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        // Never allow swiping to switch between pages
+        return false;
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -114,7 +120,6 @@ public class HomeScreenActivity extends AppCompatActivity
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         }
-
         @Override
         public void onPageSelected(int position) {
             if (prevMenuItem != null) {
@@ -122,14 +127,12 @@ public class HomeScreenActivity extends AppCompatActivity
             } else {
                 navigation.getMenu().getItem(0).setChecked(false);
             }
-//            Log.d("page", "onPageSelected: " + position);
             switch (position){
                 case 0:
                     navigation.getMenu().getItem(0).setChecked(true);
                     break;
                 case 1:
                     navigation.getMenu().getItem(1).setChecked(true);
-//                    navigation.getMenu().getItem(position).setChecked(true);
                     break;
                 case 2:
                     navigation.getMenu().getItem(2).setChecked(true);
@@ -139,13 +142,9 @@ public class HomeScreenActivity extends AppCompatActivity
                     break;
                 case 4:
                     // My Appointment Screen from the Drawer Menu
-                    int  id = navigation.getSelectedItemId();
-                    Log.d("Item Id",String.valueOf(id));
-                    navigation.getMenu().findItem(id).setChecked(true);
                     break;
             }
             if(position < 4) {
-                Log.d("Position",String.valueOf(position));
                 prevMenuItem = navigation.getMenu().getItem(position);
             }
         }
@@ -180,7 +179,6 @@ public class HomeScreenActivity extends AppCompatActivity
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            android.support.v4.app.Fragment fragment = null;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
 //                    fragment = new ContentHomeScreen();
@@ -233,18 +231,11 @@ public class HomeScreenActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            // Handle the camera action
-//            fragment = new User_Profile();
             viewPager.setCurrentItem(3);
-//            startActivity(new Intent(HomeScreenActivity.this,User_Profile.class));
-
         } else if (id == R.id.nav_appointment) {
-//            fragment = new Appointments();
             viewPager.setCurrentItem(4);
-//            startActivity(new Intent(HomeScreenActivity.this,Appointments.class));
-
         } else if (id == R.id.nav_reminder) {
-
+            viewPager.setCurrentItem(1);
         } else if (id == R.id.nav_setting) {
 
         } else if (id == R.id.nav_TOU) {

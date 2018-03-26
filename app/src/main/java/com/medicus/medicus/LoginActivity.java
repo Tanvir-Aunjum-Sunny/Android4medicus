@@ -46,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private String otp;
     private String token;
+    private String requestId;
 
     private String contact_no;
     private static final int REQUEST_READ_CONTACTS = 0;
@@ -115,20 +116,13 @@ public class LoginActivity extends AppCompatActivity {
                 //Make api calls here or what not
                 String inputText = pinview.getValue();
                 if (inputText.length() == 4) {
-                    if (inputText.equals(otp)) {
-                        Log.d("correct Pin", "Verfied");
-                        Toast.makeText(getApplicationContext(),
-                                "Validated: Welcome",
-                                Toast.LENGTH_LONG)
-                                .show();
-                        changeInstance();
-                    } else {
-                        Toast.makeText(getApplicationContext(),
-                                "Incorrect Pin",
-                                Toast.LENGTH_LONG)
-                                .show();
-                        Log.d("Incorrect Pin", "Not Verfied");
-                    }
+                    verifyUser(inputText);
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "Incorrect Pin",
+                            Toast.LENGTH_LONG)
+                            .show();
+                    Log.d("Incorrect Pin", "Not Verfied");
                 }
             }
         });
@@ -162,14 +156,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void postRequest() {
-        contact_no = mEmailView.getText().toString();
+        contact_no = "91"+mEmailView.getText().toString()+"_user";
 
         @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, String> async = new  AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
 
                 // CASE 2: For JSONObject parameter
-                String url = "http://192.168.0.102:3000/api/v1/login/create";
+                String url = "http://192.168.0.102:3000/api/v1/login";
                 JSONObject jsonBody;
                 String requestBody;
                 HttpURLConnection urlConnection = null;
@@ -215,9 +209,95 @@ public class LoginActivity extends AppCompatActivity {
                         JSONObject jsonObj = new JSONObject(response);
 
                         // Getting JSON Array node
-                        otp = jsonObj.get("pin").toString();
-                        token = jsonObj.get("JWT").toString();
-                        Log.d("Response", token);
+                        requestId = jsonObj.getString("requestId");
+//                        otp = jsonObj.get("pin").toString();
+//                        token = jsonObj.get("JWT").toString();
+//                        Log.d("Response", token);
+                    } catch (final JSONException e) {
+                        Log.e("JSON", "Json parsing error: " + e.getMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(),
+                                        "Json parsing error: " + e.getMessage(),
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
+                    }
+                }
+            }
+        };
+        async.execute();
+    }
+
+    private void verifyUser(final String OTP) {
+//        contact_no = mEmailView.getText().toString();
+
+        @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, String> async = new  AsyncTask<Void, Void, String>() {
+            int responseCode = 401;
+            @Override
+            protected String doInBackground(Void... params) {
+
+                // CASE 2: For JSONObject parameter
+                String url = "http://192.168.0.102:3000/api/v1/login/verify";
+                JSONObject jsonBody;
+                String requestBody;
+                HttpURLConnection urlConnection = null;
+
+                try {
+                    jsonBody = new JSONObject();
+                    jsonBody.put("requestId", requestId);
+                    jsonBody.put("pin", OTP);
+                    jsonBody.put("mobile",contact_no);
+                    requestBody = Utils.buildPostParameters(jsonBody);
+                    urlConnection = (HttpURLConnection) Utils.makeRequest("POST", url, null, "application/json", requestBody);
+
+                    // the same logic to case #1
+                    InputStream inputStream;
+                    // get stream
+                    if (urlConnection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+                        inputStream = urlConnection.getInputStream();
+                    } else {
+                        inputStream = urlConnection.getErrorStream();
+                    }
+                    // parse stream
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    String temp, response = "";
+                    while ((temp = bufferedReader.readLine()) != null) {
+                        response += temp;
+                    }
+                    responseCode = urlConnection.getResponseCode();
+                    return response;
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                    return e.toString();
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String response) {
+                super.onPostExecute(response);
+                // do something...
+                //get Value of otp
+                if (response != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(response);
+
+                        // Getting JSON Array node
+                        if(responseCode==200) {
+                            token = jsonObj.get("JWT").toString();
+                            changeInstance();
+                        } else if(responseCode == 401){
+                            Toast.makeText(getApplicationContext(),
+                                    "Incorrect Pin please verify",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        }
                     } catch (final JSONException e) {
                         Log.e("JSON", "Json parsing error: " + e.getMessage());
                         runOnUiThread(new Runnable() {

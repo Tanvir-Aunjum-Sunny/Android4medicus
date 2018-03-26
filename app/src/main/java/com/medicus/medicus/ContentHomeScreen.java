@@ -82,8 +82,6 @@ public class ContentHomeScreen extends android.support.v4.app.Fragment{
 
         list = view.findViewById(R.id.listView);
         //implement search bar
-//        searchText=(AutoCompleteTextView)view.findViewById(R.id.search_text);
-
         // AutoComplete the EditText
         autoCompleteTextView = view.findViewById(R.id.search_text);
         // Get the string array
@@ -112,7 +110,6 @@ public class ContentHomeScreen extends android.support.v4.app.Fragment{
                 postRequest(pos);
             }
         });
-
         return view;
     }
 
@@ -162,18 +159,6 @@ public class ContentHomeScreen extends android.support.v4.app.Fragment{
                         response += temp;
                     }
                     doc_response = response;
-                    Log.d("Doc",doc_response);
-                    jsonArray_special = new JSONArray(doc_response);
-                    for(int i = 0; i < jsonArray_special.length(); i++) {
-                        jObj = jsonArray_special.getJSONObject(i);
-                        arr.add(jObj.getString("profile_image_url"));
-//                        URL url2 = new URL(jObj.getString("profile_image_url"));
-//                        mimage.add(BitmapFactory.decodeStream(url2.openConnection().getInputStream()).toString());
-//                        mTitle.add(jObj.getString("first_name")+" "+jObj.getString("last_name"));
-//                        mDesignation.add(jObj.getString("qualification_name"));
-//                        mDescription.add(jObj.getString("professional_statement"));
-                    }
-
                     return response;
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
@@ -190,27 +175,23 @@ public class ContentHomeScreen extends android.support.v4.app.Fragment{
                 super.onPostExecute(response);
                 //for Layout search page
                 try {
+                    jsonArray_special = new JSONArray(doc_response);
                     for(int i = 0; i < jsonArray_special.length(); i++){
                         jObj = jsonArray_special.getJSONObject(i);
                         mTitle.add(jObj.getString("first_name")+" "+jObj.getString("last_name"));
                         mDesignation.add(jObj.getString("qualification_name"));
                         mDescription.add(jObj.getString("professional_statement"));
-//                        getImage(arr);
-//                        Log.d("imagesBitmap",arr.toString());
+                        arr.add(jObj.getString("profile_image_url"));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-//                Activity activity = getActivity();
-//                Adapter adapter=new LazyImageLoadAdapter(activity, arr.toArray(new String[arr.size()]));
                 Adapter adapter = new Adapter(getContext(),arr.toArray(new String[arr.size()]),mTitle.toArray(new String[mTitle.size()]),mDesignation.toArray(new String[mDesignation.size()]),mDescription.toArray(new String[mDescription.size()]));
                 list.setAdapter(adapter);
             }
         };
         async.execute();
     }
-
-
 }
 
 class Adapter extends ArrayAdapter<String> {
@@ -229,13 +210,6 @@ class Adapter extends ArrayAdapter<String> {
         this.images=imgs;
     }
 
-    Adapter(Context c,String[] imgs){
-        super(c,R.layout.single_row,R.id.listName);
-        this.context = c;
-        this.images=imgs;
-    }
-
-
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -247,58 +221,27 @@ class Adapter extends ArrayAdapter<String> {
         TextView listDesignation=(TextView)row.findViewById(R.id.listDesignation);
         TextView listDescription=(TextView)row.findViewById(R.id.listDescription);
 
-        Bitmap bitmap = null;
-        try {
-            byte[] encodeByte = Base64.decode(images[position], Base64.DEFAULT);
-            bitmap = BitmapFactory.decodeByteArray(encodeByte, 0,
-                    encodeByte.length);
-        } catch (Exception e) {
-            e.getMessage();
-        }
-
         listName.setText(titleArray[position]);
         listDesignation.setText(designationArray[position]);
         listDescription.setText(descriptionArray[position]);
 
-//        listImage.setImageBitmap(BitmapFactory.decodeFile(images[position]));
-
-//        for (int i=0; i<images.length;i++){
         if(position<images.length) {
             getImage(listImage, images[position], position);
         } else{
             getImage(listImage, images[position-1], position);
         }
-//        }
-//        getImage(listImage,position);
-//        listImage.setImageBitmap(BitmapFactory.decodeFile());
-
         return row;
     }
 
     private void getImage(final ImageView imageView,final String imageUrl,final int position) {
-//        final String[] bitmap = new String[1];
         @SuppressLint("StaticFieldLeak") AsyncTask<Void, Void, Bitmap> async = new  AsyncTask<Void, Void, Bitmap>() {
-            JSONObject jObj;
             Bitmap imageBitmap;
-            //            ArrayList<String> arr = new ArrayList<>();
             @Override
             protected Bitmap doInBackground(Void... params) {
                 // CASE 2: For JSONObject parameter
                 try {
-//                    jsonArray_special = new JSONArray(docs);
-//                    for(int i = 0; i < images.length; i++) {
-//                        jObj = jsonArray_special.getJSONObject(i);
-//                        arr.add(jObj.getString("profile_image_url"));
-                        URL url2 = new URL(imageUrl);
-//                        images[i] = (BitmapFactory.decodeStream(url2.openConnection().getInputStream()).toString());
-                        imageBitmap = BitmapFactory.decodeStream(url2.openConnection().getInputStream());
-//                        bitmap[0] = mimage.get(position).toString();
-
-//                        Log.d("DocImages",mimage.toString());
-                        //                        mTitle.add(jObj.getString("first_name")+" "+jObj.getString("last_name"));
-                        //                        mDesignation.add(jObj.getString("qualification_name"));
-                        //                        mDescription.add(jObj.getString("professional_statement"));
-
+                    URL url2 = new URL(imageUrl);
+                    imageBitmap = BitmapFactory.decodeStream(url2.openConnection().getInputStream());
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -311,24 +254,8 @@ class Adapter extends ArrayAdapter<String> {
             protected void onPostExecute(Bitmap response) {
                 super.onPostExecute(response);
                 imageView.setImageBitmap(response);
-                //for Layout search page
-//                try {
-//                    for(int i = 0; i < jsonArray_special.length(); i++){
-//                        jObj = jsonArray_special.getJSONObject(i);
-//                        mTitle.add(jObj.getString("first_name")+" "+jObj.getString("last_name"));
-//                        mDesignation.add(jObj.getString("qualification_name"));
-//                        mDescription.add(jObj.getString("professional_statement"));
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                Activity activity = getActivity();
-////                Adapter adapter=new LazyImageLoadAdapter(activity, arr.toArray(new String[arr.size()]));
-//                Adapter adapter = new Adapter(getContext(),mimage.toArray(new String[mimage.size()]));
-//                list.setAdapter(adapter);
             }
         };
         async.execute();
-//        return bitmap[0];
     }
 }
